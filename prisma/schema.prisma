@@ -1,0 +1,103 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model UserAssessment {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  cpr          String
+  firsAid      String
+  pathogen     String
+  preparedness String
+  teamwork     String
+  userId       String @db.ObjectId
+}
+
+model UserInfo {
+  id                   String    @id @default(auto()) @map("_id") @db.ObjectId
+  v                    Int       @map("__v")
+  address              String
+  category             String
+  certificateUrl       String    @default("")
+  certificatedApproved Boolean   @default(false)
+  contact              String
+  dateCreated          DateTime  @default(now()) @db.Date
+  dateEnded            String?
+  dateStarted          String
+  email                String    @unique
+  gender               String
+  name                 String
+  orNumber             String
+  password             String
+  profilePictureUrl    String
+  userType             String
+  ratings              ratings[] // One-to-Many relation with ratings model    // One-to-Many relation with Rating
+}
+
+model choices {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  v           Int     @map("__v")
+  isCorrect   Boolean
+  question_id String  @db.ObjectId
+  text        String
+}
+
+model instructors {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  v              Int      @map("__v")
+  address        String
+  contact        String
+  createdAt      DateTime @default(now()) @db.Date
+  email          String
+  field          String
+  gender         String
+  name           String
+  profilePicture String
+  updatedAt      DateTime @default(now()) @db.Date
+}
+
+model module_quiz {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  v           Int      @map("__v")
+  module_name String
+  questions   String[]
+  total_score Int
+  user_id     String
+}
+
+model modules {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  v          Int      @map("__v")
+  createdAt  DateTime @db.Date
+  moduleName String
+  totalScore Int[]
+  updatedAt  DateTime @default(now()) @db.Date
+  userId     String   @db.ObjectId
+}
+
+model questions {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  v            Int      @map("__v")
+  choices      String[]
+  module_id    String   @db.ObjectId
+  questionText String
+}
+
+model ratings {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  v            Int       @map("__v")
+  createdAt    DateTime  @default(now()) @db.Date
+  instructorId String?   @db.ObjectId
+  rate1        Int
+  rate2        Int
+  rate3        Int
+  rate4        Int
+  rate5        Int
+  updatedAt    DateTime  @default(now()) @db.Date
+  user         UserInfo? @relation(fields: [userId], references: [id]) // Define the relationship
+  userId       String    @db.ObjectId
+}
